@@ -8,7 +8,7 @@
 #define ll long long
 #define ui unsigned int
 unsigned long long p = 1 << 30;
-unsigned long long mod = 10;
+unsigned long long mod = 4 * p;
 
 bool boolAt (int pos)
 {
@@ -18,10 +18,33 @@ bool boolAt (int pos)
 std::string to_string(big_integer const& a)
 {
     std::string res = "";
-    if (a.flag) res = "-";
-    for (int i = (int)a.data.size() - 1; i >= 0; --i)
+    big_integer aa (a);
+    big_integer bb (0);
+    big_integer cc (0);
+    big_integer dd (0);
+    if (a.flag == 1) {
+        aa.flag = false;
+    }
+    if (a == big_integer(0)) return "0";
+    while ((aa) > big_integer(0))
     {
-        res.push_back((char)(a.data[i] + 48));
+        bb = aa / big_integer(1000000000);
+        cc = bb * big_integer(1000000000);
+        dd = aa - cc;
+        aa = bb;
+        for (int i = 0; i < 9; i++)
+        {
+            res += dd.data[0] % 10 + 48;
+            dd.data[0] /= 10;
+        }
+    }
+    while (res[res.size() - 1] == '0') res.pop_back();
+    if (a.flag == 1) {
+        res+='-';
+    }
+    for (int  i = 0; i < res.size()/2; ++i)
+    {
+        std::swap(res[i], res[res.size()-1-i]);
     }
     return res;
 }
@@ -41,11 +64,11 @@ big_integer::big_integer()
 
 big_integer::big_integer(std::string str)
 {
-    
     if (str[0] == '-') flag = true; else flag = false;
-    for (int i = (int) str.size() - 1; i >= (str[0] == '-' ? 1 : 0); --i)
+    for (int i = 0; i < str.size(); ++i)
     {
-        data.push_back(str[i] - 48);
+        *this *= big_integer(10);
+        *this += big_integer(str[i] - 48);
     }
 }
 
@@ -252,14 +275,73 @@ big_integer& big_integer::operator*=(big_integer const& b)
     return *this;
 }
 
-big_integer& big_integer::operator/=(big_integer const& rhs)
-{
-    return *this;
-}
 
 big_integer operator*(big_integer a, big_integer const& b)
 {
     return a *= b;
+}
+
+big_integer div2(big_integer a)
+{
+    ull b, c = 0;
+    for (int i = (int)a.data.size() - 1; i >= 0; --i)
+    {
+        b = a.data[i] % 2;
+        a.data[i] >>= 1;
+        a.data[i] += (2*p) * c;
+        c = b;
+    }
+    return a;
+}
+
+big_integer& big_integer::operator/=(big_integer const& rhs)
+{
+    if (*this < rhs)
+    {
+        *this = big_integer(0);
+        return *this;
+    }
+    big_integer m(1);
+    big_integer a(-1), b(*this + 1);
+    while (b - a > big_integer(1))
+    {
+        m = div2(b + a + big_integer(1));
+        big_integer bb = m * rhs;
+        if (bb > *this) {
+            b = m;
+        }
+        else
+        {
+            a = m;
+        }
+    }
+    
+    if (a * rhs <= *this) {
+        *this = a;
+    } else {
+        *this = b;
+    }
+    while (!data[data.size() - 1] and data.size() != 1) data.pop_back();
+    return *this;
+}
+
+big_integer operator/(big_integer a, big_integer const& b)
+{
+    return a /= b;
+}
+
+
+big_integer& big_integer::operator%=(big_integer const& rhs)
+{
+
+    big_integer res = *this - rhs * (*this / rhs);
+    *this = res;
+    return *this;
+}
+
+big_integer operator%(big_integer a, big_integer const& b)
+{
+    return a %= b;
 }
 
 /*
@@ -355,10 +437,7 @@ big_integer operator*(big_integer a, big_integer const& b)
  
 
  
- big_integer operator/(big_integer a, big_integer const& b)
- {
- return a /= b;
- }
+
  
  big_integer operator%(big_integer a, big_integer const& b)
  {

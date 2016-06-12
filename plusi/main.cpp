@@ -12,13 +12,7 @@
 using namespace std;
 int main () {
     std::string s1, s2;
-    int n;
-    cin >> n;
-    big_integer a ("1");
-    big_integer b ("2");
-    for (int i = 2; i <= n; i++) {
-        a *= b;
-        b += big_integer(1);
-    }
-    cout << a << endl;
+    cin >> s1;
+    big_integer a (s1);
+    cout << a + 1 <<endl; 
 }

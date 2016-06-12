@@ -6,6 +6,7 @@
 struct big_integer
 {
     big_integer(std::string str);
+    friend big_integer div2(big_integer a);
     big_integer();
     big_integer(big_integer const& other);
     big_integer(int a);
@@ -18,7 +19,7 @@ struct big_integer
     big_integer& operator-=(big_integer const& rhs);
     big_integer& operator*=(big_integer const& rhs);
     big_integer& operator/=(big_integer const& rhs);
-    //big_integer& operator%=(big_integer const& rhs);
+    big_integer& operator%=(big_integer const& rhs);
     
     //big_integer& operator&=(big_integer const& rhs);
     //big_integer& operator|=(big_integer const& rhs);
@@ -55,7 +56,7 @@ big_integer operator+(big_integer a, big_integer const& b);
 big_integer operator-(big_integer a, big_integer const& b);
 big_integer operator*(big_integer a, big_integer const& b);
 big_integer operator/(big_integer a, big_integer const& b);
-//big_integer operator%(big_integer a, big_integer const& b);
+big_integer operator%(big_integer a, big_integer const& b);
 
 //big_integer operator&(big_integer a, big_integer const& b);
 //big_integer operator|(big_integer a, big_integer const& b);
